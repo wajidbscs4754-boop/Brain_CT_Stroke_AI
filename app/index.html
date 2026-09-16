@@ -1,0 +1,1229 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Brain CT AI · Stroke Assistant</title>
+
+    <link
+        rel="stylesheet"
+        href="/static/style.css"
+    >
+</head>
+
+<body>
+
+<div class="app">
+
+    <!-- =====================================================
+         SIDEBAR
+    ====================================================== -->
+
+    <aside class="sidebar">
+
+        <div class="brand">
+
+            <div class="brand-icon">
+                <span>✦</span>
+            </div>
+
+            <div class="brand-text">
+                <strong>Brain CT AI</strong>
+                <span>Stroke Assistant</span>
+            </div>
+
+        </div>
+
+
+        <nav class="navigation">
+
+            <div class="nav-label">
+                WORKSPACE
+            </div>
+
+            <a
+                href="#"
+                class="nav-item active"
+                onclick="showAnalysis(event)"
+            >
+                <span class="nav-icon">⌂</span>
+                <span>Dashboard</span>
+            </a>
+
+            <a
+                href="#analysis"
+                class="nav-item"
+                onclick="showAnalysis(event)"
+            >
+                <span class="nav-icon">◉</span>
+                <span>AI Analysis</span>
+            </a>
+
+        </nav>
+
+
+        <div class="sidebar-bottom">
+
+            <div class="system-status">
+
+                <span class="status-dot"></span>
+
+                <div>
+                    <strong>AI System Ready</strong>
+                    <span>Ready for analysis</span>
+                </div>
+
+            </div>
+
+        </div>
+
+    </aside>
+
+
+    <!-- =====================================================
+         MAIN CONTENT
+    ====================================================== -->
+
+    <main class="main-content">
+
+        <!-- TOP BAR -->
+
+        <header class="topbar">
+
+            <div>
+
+                <div class="eyebrow">
+                    BRAIN CT ANALYSIS
+                </div>
+
+                <h1>
+                    Stroke Classification
+                </h1>
+
+                <p>
+                    Upload a brain CT image for AI-assisted classification.
+                </p>
+
+            </div>
+
+
+            <div class="topbar-badge">
+
+                <span class="status-dot"></span>
+
+                System Online
+
+            </div>
+
+        </header>
+
+
+        <!-- =================================================
+             ANALYSIS AREA
+        ================================================== -->
+
+        <section
+            class="analysis-container"
+            id="analysis"
+        >
+
+            <!-- =================================================
+                 UPLOAD CARD
+            ================================================== -->
+
+            <div class="card upload-card">
+
+                <div class="card-header">
+
+                    <div class="card-title-group">
+
+                        <div class="card-icon">
+                            ↑
+                        </div>
+
+                        <div>
+
+                            <span class="section-label">
+                                STEP 01
+                            </span>
+
+                            <h2>
+                                Upload CT Scan
+                            </h2>
+
+                            <p>
+                                Select a brain CT image for analysis.
+                            </p>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <!-- UPLOAD ZONE -->
+
+                <div
+                    class="upload-zone"
+                    id="uploadZone"
+                >
+
+                    <div
+                        class="upload-icon"
+                        id="uploadIcon"
+                    >
+                        ↑
+                    </div>
+
+                    <h3>
+                        Drop your CT image here
+                    </h3>
+
+                    <p>
+                        or select an image from your computer
+                    </p>
+
+
+                    <label
+                        for="fileInput"
+                        class="browse-button"
+                    >
+                        Browse Image
+                    </label>
+
+
+                    <input
+                        type="file"
+                        id="fileInput"
+                        accept="image/png,image/jpeg,image/jpg,image/webp,image/bmp"
+                        hidden
+                    >
+
+
+                    <small>
+                        PNG, JPG, JPEG, WEBP or BMP
+                    </small>
+
+                </div>
+
+
+                <!-- SELECTED FILE -->
+
+                <div
+                    class="selected-file hidden"
+                    id="selectedFile"
+                >
+
+                    <div class="file-info">
+
+                        <div class="file-icon">
+                            ◫
+                        </div>
+
+                        <div>
+
+                            <strong id="fileName">
+                                image.png
+                            </strong>
+
+                            <span id="fileSize">
+                                0 KB
+                            </span>
+
+                        </div>
+
+                    </div>
+
+
+                    <button
+                        type="button"
+                        class="remove-button"
+                        id="removeButton"
+                    >
+                        ×
+                    </button>
+
+                </div>
+
+
+                <!-- IMAGE PREVIEW -->
+
+                <div
+                    class="image-preview-container hidden"
+                    id="previewContainer"
+                >
+
+                    <div class="preview-header">
+
+                        <span>
+                            CT Image Preview
+                        </span>
+
+                    </div>
+
+                    <div class="image-preview">
+
+                        <img
+                            id="imagePreview"
+                            src=""
+                            alt="Brain CT preview"
+                        >
+
+                    </div>
+
+                </div>
+
+
+                <!-- ANALYZE BUTTON -->
+
+                <button
+                    type="button"
+                    class="analyze-button"
+                    id="analyzeButton"
+                    disabled
+                >
+
+                    <span>
+                        Analyze CT Scan
+                    </span>
+
+                    <span class="button-arrow">
+                        →
+                    </span>
+
+                </button>
+
+
+                <!-- LOADING -->
+
+                <div
+                    class="loading-state hidden"
+                    id="loadingState"
+                >
+
+                    <div class="spinner"></div>
+
+                    <div>
+
+                        <strong>
+                            Analyzing CT scan...
+                        </strong>
+
+                        <span>
+                            AI model is processing the image.
+                        </span>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- =================================================
+                 RESULT CARD
+            ================================================== -->
+
+            <div
+                class="card result-card hidden"
+                id="resultCard"
+            >
+
+                <div class="card-header">
+
+                    <div class="card-title-group">
+
+                        <div class="card-icon">
+                            ✓
+                        </div>
+
+                        <div>
+
+                            <span class="section-label">
+                                STEP 02
+                            </span>
+
+                            <h2>
+                                Analysis Result
+                            </h2>
+
+                            <p>
+                                AI classification and confidence details.
+                            </p>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <!-- PREDICTION -->
+
+                <div class="prediction-banner">
+
+                    <div class="result-icon">
+                        ✓
+                    </div>
+
+                    <div class="prediction-content">
+
+                        <span class="prediction-label">
+                            PREDICTED CLASS
+                        </span>
+
+                        <h2 id="predictionText">
+                            —
+                        </h2>
+
+                    </div>
+
+
+                    <div class="confidence-box">
+
+                        <span>
+                            CONFIDENCE
+                        </span>
+
+                        <strong id="confidenceText">
+                            0%
+                        </strong>
+
+                    </div>
+
+                </div>
+
+
+                <!-- PROBABILITIES -->
+
+                <div class="probabilities">
+
+                    <div class="probability-header">
+
+                        <h3>
+                            Class Probabilities
+                        </h3>
+
+                        <span>
+                            Model output
+                        </span>
+
+                    </div>
+
+
+                    <!-- NORMAL -->
+
+                    <div class="probability-item">
+
+                        <div class="probability-info">
+
+                            <span>
+                                Normal
+                            </span>
+
+                            <strong id="normalValue">
+                                0%
+                            </strong>
+
+                        </div>
+
+                        <div class="progress-track">
+
+                            <div
+                                class="progress-fill"
+                                id="normalBar"
+                                style="width: 0%"
+                            ></div>
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- ISCHEMIA -->
+
+                    <div class="probability-item">
+
+                        <div class="probability-info">
+
+                            <span>
+                                Ischemia
+                            </span>
+
+                            <strong id="ischemiaValue">
+                                0%
+                            </strong>
+
+                        </div>
+
+                        <div class="progress-track">
+
+                            <div
+                                class="progress-fill"
+                                id="ischemiaBar"
+                                style="width: 0%"
+                            ></div>
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- BLEEDING -->
+
+                    <div class="probability-item">
+
+                        <div class="probability-info">
+
+                            <span>
+                                Bleeding
+                            </span>
+
+                            <strong id="bleedingValue">
+                                0%
+                            </strong>
+
+                        </div>
+
+                        <div class="progress-track">
+
+                            <div
+                                class="progress-fill"
+                                id="bleedingBar"
+                                style="width: 0%"
+                            ></div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <!-- LANGGRAPH EXPLANATION -->
+
+                <div class="assistant-box">
+
+                    <div class="assistant-header">
+
+                        <div class="assistant-avatar">
+                            AI
+                        </div>
+
+                        <div>
+
+                            <strong>
+                                LangGraph Assistant
+                            </strong>
+
+                            <span>
+                                Explanation
+                            </span>
+
+                        </div>
+
+                    </div>
+
+
+                    <div
+                        class="assistant-content"
+                        id="explanationText"
+                    >
+                        Analysis explanation will appear here.
+                    </div>
+
+                </div>
+
+
+                <!-- DISCLAIMER -->
+
+                <div class="result-note">
+
+                    <strong>Note:</strong>
+
+                    This system is a research prototype for
+                    educational and experimental use. It is not a
+                    clinical diagnostic system.
+
+                </div>
+
+            </div>
+
+
+            <!-- =================================================
+                 ERROR CARD
+            ================================================== -->
+
+            <div
+                class="card error-card hidden"
+                id="errorCard"
+            >
+
+                <div class="error-icon">
+                    !
+                </div>
+
+                <div>
+
+                    <strong>
+                        Analysis Failed
+                    </strong>
+
+                    <p id="errorText">
+                        Something went wrong while analyzing the image.
+                    </p>
+
+                </div>
+
+            </div>
+
+        </section>
+
+    </main>
+
+</div>
+
+
+<!-- =========================================================
+     JAVASCRIPT
+========================================================== -->
+
+<script>
+
+    // ---------------------------------------------------------
+    // ELEMENTS
+    // ---------------------------------------------------------
+
+    const fileInput = document.getElementById("fileInput");
+
+    const uploadZone = document.getElementById("uploadZone");
+
+    const selectedFile = document.getElementById("selectedFile");
+
+    const fileName = document.getElementById("fileName");
+
+    const fileSize = document.getElementById("fileSize");
+
+    const removeButton = document.getElementById("removeButton");
+
+    const previewContainer =
+        document.getElementById("previewContainer");
+
+    const imagePreview =
+        document.getElementById("imagePreview");
+
+    const analyzeButton =
+        document.getElementById("analyzeButton");
+
+    const loadingState =
+        document.getElementById("loadingState");
+
+    const resultCard =
+        document.getElementById("resultCard");
+
+    const errorCard =
+        document.getElementById("errorCard");
+
+    const errorText =
+        document.getElementById("errorText");
+
+    const predictionText =
+        document.getElementById("predictionText");
+
+    const confidenceText =
+        document.getElementById("confidenceText");
+
+    const normalValue =
+        document.getElementById("normalValue");
+
+    const ischemiaValue =
+        document.getElementById("ischemiaValue");
+
+    const bleedingValue =
+        document.getElementById("bleedingValue");
+
+    const normalBar =
+        document.getElementById("normalBar");
+
+    const ischemiaBar =
+        document.getElementById("ischemiaBar");
+
+    const bleedingBar =
+        document.getElementById("bleedingBar");
+
+    const explanationText =
+        document.getElementById("explanationText");
+
+
+    // ---------------------------------------------------------
+    // CURRENT FILE
+    // ---------------------------------------------------------
+
+    let currentFile = null;
+
+
+    // ---------------------------------------------------------
+    // FORMAT FILE SIZE
+    // ---------------------------------------------------------
+
+    function formatFileSize(bytes) {
+
+        if (bytes < 1024) {
+            return bytes + " B";
+        }
+
+        if (bytes < 1024 * 1024) {
+            return (bytes / 1024).toFixed(1) + " KB";
+        }
+
+        return (bytes / (1024 * 1024)).toFixed(2) + " MB";
+    }
+
+
+    // ---------------------------------------------------------
+    // VALIDATE FILE
+    // ---------------------------------------------------------
+
+    function isValidImage(file) {
+
+        if (!file) {
+            return false;
+        }
+
+        return file.type.startsWith("image/");
+
+    }
+
+
+    // ---------------------------------------------------------
+    // HANDLE FILE
+    // ---------------------------------------------------------
+
+    function handleFile(file) {
+
+        if (!file) {
+            return;
+        }
+
+
+        if (!isValidImage(file)) {
+
+            showError(
+                "Please select a valid image file."
+            );
+
+            return;
+
+        }
+
+
+        currentFile = file;
+
+
+        // File information
+
+        fileName.textContent = file.name;
+
+        fileSize.textContent =
+            formatFileSize(file.size);
+
+
+        // Preview
+
+        const reader = new FileReader();
+
+
+        reader.onload = function(event) {
+
+            imagePreview.src =
+                event.target.result;
+
+            previewContainer.classList.remove("hidden");
+
+        };
+
+
+        reader.readAsDataURL(file);
+
+
+        // UI
+
+        selectedFile.classList.remove("hidden");
+
+        analyzeButton.disabled = false;
+
+        resultCard.classList.add("hidden");
+
+        errorCard.classList.add("hidden");
+
+    }
+
+
+    // ---------------------------------------------------------
+    // FILE INPUT
+    // ---------------------------------------------------------
+
+    fileInput.addEventListener(
+        "change",
+        function() {
+
+            const file = fileInput.files[0];
+
+            handleFile(file);
+
+        }
+    );
+
+
+    // ---------------------------------------------------------
+    // REMOVE FILE
+    // ---------------------------------------------------------
+
+    removeButton.addEventListener(
+        "click",
+        function() {
+
+            currentFile = null;
+
+            fileInput.value = "";
+
+            selectedFile.classList.add("hidden");
+
+            previewContainer.classList.add("hidden");
+
+            imagePreview.src = "";
+
+            analyzeButton.disabled = true;
+
+            resultCard.classList.add("hidden");
+
+            errorCard.classList.add("hidden");
+
+        }
+    );
+
+
+    // ---------------------------------------------------------
+    // DRAG OVER
+    // ---------------------------------------------------------
+
+    uploadZone.addEventListener(
+        "dragover",
+        function(event) {
+
+            event.preventDefault();
+
+            uploadZone.classList.add("dragging");
+
+        }
+    );
+
+
+    // ---------------------------------------------------------
+    // DRAG LEAVE
+    // ---------------------------------------------------------
+
+    uploadZone.addEventListener(
+        "dragleave",
+        function() {
+
+            uploadZone.classList.remove("dragging");
+
+        }
+    );
+
+
+    // ---------------------------------------------------------
+    // DROP
+    // ---------------------------------------------------------
+
+    uploadZone.addEventListener(
+        "drop",
+        function(event) {
+
+            event.preventDefault();
+
+            uploadZone.classList.remove("dragging");
+
+            const file =
+                event.dataTransfer.files[0];
+
+            handleFile(file);
+
+        }
+    );
+
+
+    // ---------------------------------------------------------
+    // SHOW ERROR
+    // ---------------------------------------------------------
+
+    function showError(message) {
+
+        errorText.textContent = message;
+
+        errorCard.classList.remove("hidden");
+
+    }
+
+
+    // ---------------------------------------------------------
+    // HIDE ERROR
+    // ---------------------------------------------------------
+
+    function hideError() {
+
+        errorCard.classList.add("hidden");
+
+    }
+
+
+    // ---------------------------------------------------------
+    // FORMAT PERCENTAGE
+    // ---------------------------------------------------------
+
+    function percentage(value) {
+
+        const number =
+            Number(value) || 0;
+
+        return number.toFixed(2) + "%";
+
+    }
+
+
+    // ---------------------------------------------------------
+    // SET PROBABILITY
+    // ---------------------------------------------------------
+
+    function setProbability(
+        valueElement,
+        barElement,
+        value
+    ) {
+
+        const number =
+            Math.max(
+                0,
+                Math.min(
+                    100,
+                    Number(value) || 0
+                )
+            );
+
+
+        valueElement.textContent =
+            percentage(number);
+
+
+        barElement.style.width =
+            number + "%";
+
+    }
+
+
+    // ---------------------------------------------------------
+    // ANALYZE
+    // ---------------------------------------------------------
+
+    analyzeButton.addEventListener(
+        "click",
+        async function() {
+
+            if (!currentFile) {
+
+                showError(
+                    "Please select a CT image first."
+                );
+
+                return;
+
+            }
+
+
+            hideError();
+
+
+            // Show loading
+
+            analyzeButton.disabled = true;
+
+            loadingState.classList.remove("hidden");
+
+            resultCard.classList.add("hidden");
+
+
+            try {
+
+                const formData =
+                    new FormData();
+
+                formData.append(
+                    "file",
+                    currentFile
+                );
+
+
+                // Send image to FastAPI
+
+                const response =
+                    await fetch(
+                        "/predict",
+                        {
+                            method: "POST",
+                            body: formData
+                        }
+                    );
+
+
+                let data;
+
+
+                try {
+
+                    data =
+                        await response.json();
+
+                } catch (jsonError) {
+
+                    throw new Error(
+                        "Server returned an invalid response."
+                    );
+
+                }
+
+
+                // API error
+
+                if (!response.ok) {
+
+                    throw new Error(
+                        data.detail ||
+                        data.error ||
+                        "Prediction failed."
+                    );
+
+                }
+
+
+                if (
+                    data.success === false
+                ) {
+
+                    throw new Error(
+                        data.error ||
+                        "Prediction failed."
+                    );
+
+                }
+
+
+                // -------------------------------------------------
+                // PREDICTION
+                // -------------------------------------------------
+
+                const prediction =
+                    data.prediction ||
+                    "Unknown";
+
+
+                const confidence =
+                    Number(
+                        data.confidence
+                    ) || 0;
+
+
+                predictionText.textContent =
+                    prediction;
+
+
+                confidenceText.textContent =
+                    percentage(confidence);
+
+
+                // -------------------------------------------------
+                // PROBABILITIES
+                // -------------------------------------------------
+
+                const probabilities =
+                    data.probabilities || {};
+
+
+                const normal =
+                    Number(
+                        probabilities.Normal ??
+                        probabilities.normal ??
+                        0
+                    );
+
+
+                const ischemia =
+                    Number(
+                        probabilities.Ischemia ??
+                        probabilities.ischemia ??
+                        0
+                    );
+
+
+                const bleeding =
+                    Number(
+                        probabilities.Bleeding ??
+                        probabilities.bleeding ??
+                        0
+                    );
+
+
+                setProbability(
+                    normalValue,
+                    normalBar,
+                    normal
+                );
+
+
+                setProbability(
+                    ischemiaValue,
+                    ischemiaBar,
+                    ischemia
+                );
+
+
+                setProbability(
+                    bleedingValue,
+                    bleedingBar,
+                    bleeding
+                );
+
+
+                // -------------------------------------------------
+                // LANGGRAPH EXPLANATION
+                // -------------------------------------------------
+
+                explanationText.textContent =
+                    data.explanation ||
+                    "No explanation was returned by the assistant.";
+
+
+                // -------------------------------------------------
+                // SHOW RESULT
+                // -------------------------------------------------
+
+                resultCard.classList.remove(
+                    "hidden"
+                );
+
+
+                // Scroll result into view
+
+                setTimeout(
+                    function() {
+
+                        resultCard.scrollIntoView({
+                            behavior: "smooth",
+                            block: "start"
+                        });
+
+                    },
+                    100
+                );
+
+            }
+
+
+            catch (error) {
+
+                console.error(
+                    "Prediction error:",
+                    error
+                );
+
+
+                showError(
+                    error.message ||
+                    "Unable to analyze the CT image."
+                );
+
+            }
+
+
+            finally {
+
+                loadingState.classList.add(
+                    "hidden"
+                );
+
+                analyzeButton.disabled =
+                    !currentFile;
+
+            }
+
+        }
+    );
+
+
+    // ---------------------------------------------------------
+    // SIDEBAR NAVIGATION
+    // ---------------------------------------------------------
+
+    function showAnalysis(event) {
+
+        if (event) {
+            event.preventDefault();
+        }
+
+
+        document
+            .querySelectorAll(".nav-item")
+            .forEach(
+                function(item) {
+
+                    item.classList.remove(
+                        "active"
+                    );
+
+                }
+            );
+
+
+        if (event && event.currentTarget) {
+
+            event.currentTarget.classList.add(
+                "active"
+            );
+
+        }
+
+
+        const analysis =
+            document.getElementById(
+                "analysis"
+            );
+
+
+        if (analysis) {
+
+            analysis.scrollIntoView({
+                behavior: "smooth",
+                block: "start"
+            });
+
+        }
+
+    }
+
+
+    // ---------------------------------------------------------
+    // INITIAL STATE
+    // ---------------------------------------------------------
+
+    analyzeButton.disabled = true;
+
+</script>
+
+</body>
+</html>

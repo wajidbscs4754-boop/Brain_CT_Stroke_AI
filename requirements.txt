@@ -1,0 +1,11 @@
+torch
+torchvision
+pillow
+numpy
+pandas
+scikit-learn
+matplotlib
+langgraph
+langchain
+langchain-openai
+python-dotenv
