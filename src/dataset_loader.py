@@ -7,6 +7,13 @@ from PIL import Image
 from torchvision import transforms
 
 
+# Project root directory
+BASE_DIR = Path(__file__).resolve().parent.parent
+
+CSV_PATH = BASE_DIR / "dataset" / "train_split.csv"
+IMAGE_DIR = BASE_DIR / "dataset" / "data"
+
+
 class BrainCTDataset(Dataset):
 
     def __init__(self, csv_file, image_dir, transform=None):
@@ -41,18 +48,17 @@ transform = transforms.Compose([
 ])
 
 
-# Dataset create
-train_dataset = BrainCTDataset(
-    csv_file="dataset/train_split.csv",
-    image_dir="dataset/data",
-    transform=transform
-)
+if __name__ == "__main__":
 
+    train_dataset = BrainCTDataset(
+        csv_file=CSV_PATH,
+        image_dir=IMAGE_DIR,
+        transform=transform
+    )
 
-# Test dataset
-image, label = train_dataset[0]
+    image, label = train_dataset[0]
 
-print("Dataset loaded successfully")
-print("Total images:", len(train_dataset))
-print("Image shape:", image.shape)
-print("Label:", label)
+    print("Dataset loaded successfully")
+    print("Total images:", len(train_dataset))
+    print("Image shape:", image.shape)
+    print("Label:", label)
