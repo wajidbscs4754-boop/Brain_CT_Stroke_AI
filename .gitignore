@@ -34,3 +34,5 @@ brain_stroke_dataset/
 # OS files
 .DS_Store
 Thumbs.db
+
+*.lnk
