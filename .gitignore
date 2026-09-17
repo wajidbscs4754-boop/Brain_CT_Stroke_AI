@@ -18,8 +18,7 @@ __pycache__/
 .vscode/
 
 # Dataset
-data/
-dataset/
+dataset/data/
 brain_stroke_dataset/
 
 # Model files
