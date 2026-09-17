@@ -1,164 +1,139 @@
 from pathlib import Path
+
 import torch
-import torch.nn as nn
 from PIL import Image
 from torchvision import models, transforms
+from torch import nn
 
 
 # =========================================================
-# PROJECT PATHS
+# Paths
 # =========================================================
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 MODEL_PATH = BASE_DIR / "models" / "brain_ct_resnet18_weighted.pth"
-
 IMAGE_DIR = BASE_DIR / "dataset" / "data" / "Bleeding"
 
 
 # =========================================================
-# CLASS NAMES
-# =========================================================
-
-CLASS_NAMES = {
-    0: "Normal",
-    1: "Ischemia",
-    2: "Bleeding",
-}
-
-
-# =========================================================
-# CHECK FILES
-# =========================================================
-
-if not MODEL_PATH.exists():
-    raise FileNotFoundError(f"Model not found: {MODEL_PATH}")
-
-if not IMAGE_DIR.exists():
-    raise FileNotFoundError(f"Image folder not found: {IMAGE_DIR}")
-
-
-# =========================================================
-# LOAD MODEL
+# Device
 # =========================================================
 
 device = torch.device("cpu")
 
-model = models.resnet18(weights=None)
-
-model.fc = nn.Linear(
-    model.fc.in_features,
-    3
-)
-
-model.load_state_dict(
-    torch.load(
-        MODEL_PATH,
-        map_location=device
-    )
-)
-
-model.to(device)
-model.eval()
-
 
 # =========================================================
-# IMAGE PREPROCESSING
-# Must match prediction/web app preprocessing
+# Classes
 # =========================================================
 
-transform = transforms.Compose([
-    transforms.Resize((224, 224)),
-    transforms.ToTensor(),
-    transforms.Normalize(
-        mean=[0.485, 0.456, 0.406],
-        std=[0.229, 0.224, 0.225]
-    ),
-])
+CLASS_NAMES = [
+    "Normal",
+    "Ischemia",
+    "Bleeding"
+]
 
 
-# =========================================================
-# SELECT 5 IMAGES
-# =========================================================
+def test_bleeding_images():
 
-image_files = sorted(
-    [
-        file
-        for file in IMAGE_DIR.iterdir()
-        if file.is_file()
-        and file.suffix.lower() in [".png", ".jpg", ".jpeg"]
-    ]
-)[:5]
+    # =====================================================
+    # Check paths
+    # =====================================================
 
+    assert MODEL_PATH.exists(), "Trained model not found"
 
-if len(image_files) == 0:
-    raise ValueError("No images found in Bleeding folder.")
+    assert IMAGE_DIR.exists(), "Bleeding image folder not found"
 
+    # =====================================================
+    # Create model
+    # =====================================================
 
-# =========================================================
-# TEST IMAGES
-# =========================================================
+    model = models.resnet18(weights=None)
 
-print("\n==============================================================")
-print("              BLEEDING IMAGES TEST")
-print("==============================================================")
-
-correct_predictions = 0
-
-for image_path in image_files:
-
-    image = Image.open(image_path).convert("RGB")
-
-    input_tensor = (
-        transform(image)
-        .unsqueeze(0)
-        .to(device)
+    model.fc = nn.Linear(
+        model.fc.in_features,
+        3
     )
 
-    with torch.no_grad():
+    # =====================================================
+    # Load trained model
+    # =====================================================
 
-        outputs = model(input_tensor)
+    model.load_state_dict(
+        torch.load(
+            MODEL_PATH,
+            map_location=device
+        )
+    )
 
-        probabilities = torch.softmax(
-            outputs,
-            dim=1
+    model = model.to(device)
+    model.eval()
+
+    # =====================================================
+    # Image preprocessing
+    # =====================================================
+
+    transform = transforms.Compose([
+        transforms.Resize((224, 224)),
+        transforms.ToTensor(),
+        transforms.Normalize(
+            mean=[0.485, 0.456, 0.406],
+            std=[0.229, 0.224, 0.225]
+        )
+    ])
+
+    # =====================================================
+    # Get images
+    # =====================================================
+
+    image_files = sorted(
+        [
+            file
+            for file in IMAGE_DIR.iterdir()
+            if file.is_file()
+            and file.suffix.lower() in [".png", ".jpg", ".jpeg"]
+        ]
+    )[:5]
+
+    assert len(image_files) > 0, "No images found in Bleeding folder"
+
+    # =====================================================
+    # Test predictions
+    # =====================================================
+
+    for image_path in image_files:
+
+        image = Image.open(image_path).convert("RGB")
+
+        input_tensor = (
+            transform(image)
+            .unsqueeze(0)
+            .to(device)
         )
 
-        predicted_index = torch.argmax(
-            probabilities,
-            dim=1
-        ).item()
+        with torch.no_grad():
 
-    prediction = CLASS_NAMES[predicted_index]
+            outputs = model(input_tensor)
 
-    normal = probabilities[0][0].item() * 100
-    ischemia = probabilities[0][1].item() * 100
-    bleeding = probabilities[0][2].item() * 100
+            probabilities = torch.softmax(
+                outputs,
+                dim=1
+            )
 
-    if prediction == "Bleeding":
-        correct_predictions += 1
+            predicted_index = torch.argmax(
+                probabilities,
+                dim=1
+            ).item()
 
-    print(f"\nImage: {image_path.name}")
-    print(f"Normal:    {normal:.2f}%")
-    print(f"Ischemia:  {ischemia:.2f}%")
-    print(f"Bleeding:  {bleeding:.2f}%")
-    print(f"Prediction: {prediction}")
+        # Prediction must be one of 3 classes
+        assert 0 <= predicted_index < 3
 
+        prediction = CLASS_NAMES[predicted_index]
 
-# =========================================================
-# FINAL SUMMARY
-# =========================================================
+        assert prediction in CLASS_NAMES
 
-total_images = len(image_files)
+        print(
+            f"{image_path.name} -> {prediction}"
+        )
 
-accuracy = (
-    correct_predictions / total_images
-) * 100
-
-print("\n==============================================================")
-print("                    FINAL SUMMARY")
-print("==============================================================")
-
-print(f"Total Bleeding images tested: {total_images}")
-print(f"Correctly predicted as Bleeding: {correct_predictions}")
-print(f"Bleeding test accuracy: {accuracy:.2f}%")
+    print("Bleeding images test successful")
